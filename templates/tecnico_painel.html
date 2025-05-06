@@ -41,9 +41,9 @@
           <thead>
             <tr class="text-gray-600 border-b">
               <th class="pb-2">ID</th>
+              <th class="pb-2">Nome</th>
               <th class="pb-2">Título</th>
               <th class="pb-2">Status</th>
-              <th class="pb-2">Prioridade</th>
               <th class="pb-2">Criado em</th>
             </tr>
           </thead>
@@ -51,6 +51,7 @@
             {% for ticket in tickets %}
             <tr class="border-b hover:bg-gray-50" data-ticket-id="{{ ticket.id }}">
               <td class="py-2">TKT-{{ ticket.id|stringformat:"04d" }}</td>
+              <td class="py-2">{{ticket.usuario}}</td>
               <td>{{ ticket.titulo }}</td>
               <td>
                 {% if ticket.status == 'Aberto' %}
@@ -63,15 +64,7 @@
                   <span class="text-gray-600">{{ ticket.status }}</span>
                 {% endif %}
               </td>
-              <td>
-                {% if ticket.prioridade == 'Alta' %}
-                  <span class="text-red-500">{{ ticket.prioridade }}</span>
-                {% elif ticket.prioridade == 'Média' %}
-                  <span class="text-yellow-500">{{ ticket.prioridade }}</span>
-                {% else %}
-                  <span class="text-green-500">{{ ticket.prioridade }}</span>
-                {% endif %}
-              </td>
+
               <td>{{ ticket.criado_em|date:"d/m/Y H:i" }}</td>
             </tr>
             {% empty %}

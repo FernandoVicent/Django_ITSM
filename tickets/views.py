@@ -20,13 +20,13 @@ def criar_chamado(request):
 
 @login_required
 def dashboard_usuario(request):
-    return render(request, 'usuario_dashboard.html')
-#
+    chamados = Ticket.objects.filter(usuario=request.user).order_by('-criado_em')
+    return render(request, 'usuario_dashboard.html', {'chamados': chamados})
 
 @login_required
 def dashboard_tech(request):
     if not request.user.is_staff:
-        return redirect('user_dashboard')  # Protege contra acesso indevido
+        return redirect('usuario_dashboard')  # Protege contra acesso indevido
 
     tickets = Ticket.objects.all().order_by('-criado_em')  # Ajuste o campo se necessário
 

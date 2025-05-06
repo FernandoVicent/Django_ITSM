@@ -7,17 +7,11 @@ class Ticket(models.Model):
         ('Infraestrutura', 'Infraestrutura'),
         ('Software', 'Software'),
     ]
-    PRIORIDADES = [
-        ('Baixa', 'Baixa'),
-        ('Média', 'Média'),
-        ('Alta', 'Alta'),
-    ]
 
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     titulo = models.CharField(max_length=200)
     descricao = models.TextField()
     categoria = models.CharField(max_length=50, choices=CATEGORIAS)
-    prioridade = models.CharField(max_length=20, choices=PRIORIDADES)
     criado_em = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, default='Pendente')  # pode ser alterado depois
 
