@@ -1,0 +1,21 @@
+Index: tickets/views.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tickets/views.py b/tickets/views.py
+--- a/tickets/views.py
++++ b/tickets/views.py	(date 1746561614410)
+@@ -17,10 +17,12 @@
+     else:
+         form = TicketForm()
+     return render(request, 'create_ticket.html', {'form': form})
++
+ @login_required
+ def dashboard_usuario(request):
+     return render(request, 'usuario_dashboard.html')
+ #
++
+ @login_required
+ def dashboard_tech(request):
+     if not request.user.is_staff:

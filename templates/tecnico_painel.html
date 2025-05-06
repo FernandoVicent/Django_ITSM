@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Técnico</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Notificações -->
+    <div id="notifications" class="fixed top-4 right-4 z-50"></div>
+
+    <h1 class="text-3xl font-bold mb-6">Painel Técnico</h1>
+
+    <!-- Cards resumo -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <p class="text-gray-600">Total de Chamados</p>
+        <p class="text-2xl font-bold text-blue-600">{{ total }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <p class="text-gray-600">Abertos</p>
+        <p class="text-2xl font-bold text-red-500">{{ abertos }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <p class="text-gray-600">Em Andamento</p>
+        <p class="text-2xl font-bold text-yellow-500">{{ andamento }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow text-center">
+        <p class="text-gray-600">Resolvidos</p>
+        <p class="text-2xl font-bold text-green-600">{{ resolvidos }}</p>
+      </div>
+    </div>
+
+    <!-- Lista de últimos chamados -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Chamados</h2>
+      <div id="tickets-table">
+        <table class="w-full table-auto text-left">
+          <thead>
+            <tr class="text-gray-600 border-b">
+              <th class="pb-2">ID</th>
+              <th class="pb-2">Título</th>
+              <th class="pb-2">Status</th>
+              <th class="pb-2">Prioridade</th>
+              <th class="pb-2">Criado em</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ticket in tickets %}
+            <tr class="border-b hover:bg-gray-50" data-ticket-id="{{ ticket.id }}">
+              <td class="py-2">TKT-{{ ticket.id|stringformat:"04d" }}</td>
+              <td>{{ ticket.titulo }}</td>
+              <td>
+                {% if ticket.status == 'Aberto' %}
+                  <span class="text-blue-600 font-medium">{{ ticket.status }}</span>
+                {% elif ticket.status == 'Em andamento' %}
+                  <span class="text-yellow-500 font-medium">{{ ticket.status }}</span>
+                {% elif ticket.status == 'Resolvido' %}
+                  <span class="text-green-600 font-medium">{{ ticket.status }}</span>
+                {% else %}
+                  <span class="text-gray-600">{{ ticket.status }}</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if ticket.prioridade == 'Alta' %}
+                  <span class="text-red-500">{{ ticket.prioridade }}</span>
+                {% elif ticket.prioridade == 'Média' %}
+                  <span class="text-yellow-500">{{ ticket.prioridade }}</span>
+                {% else %}
+                  <span class="text-green-500">{{ ticket.prioridade }}</span>
+                {% endif %}
+              </td>
+              <td>{{ ticket.criado_em|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center text-gray-500 py-4">Nenhum chamado encontrado.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showNotification(message) {
+      const notification = $(`
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded shadow-lg transform transition-all duration-500 ease-in-out">
+          <p>${message}</p>
+        </div>
+      `);
+      
+      $('#notifications').append(notification);
+      
+      // Remove a notificação após 5 segundos
+      setTimeout(() => {
+        notification.fadeOut(500, function() {
+          $(this).remove();
+        });
+      }, 5000);
+    }
+
+    function checkNewTickets() {
+      $.ajax({
+        url: window.location.href,
+        method: 'GET',
+        success: function(response) {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(response, 'text/html');
+          const newTickets = $(doc).find('#tickets-table tr[data-ticket-id]');
+          const currentTickets = $('#tickets-table tr[data-ticket-id]');
+          
+          newTickets.each(function() {
+            const ticketId = $(this).data('ticket-id');
+            if (!currentTickets.filter(`[data-ticket-id="${ticketId}"]`).length) {
+              const ticketTitle = $(this).find('td:eq(1)').text();
+              showNotification(`Novo chamado criado: ${ticketTitle}`);
+              $('#tickets-table tbody').prepend($(this));
+            }
+          });
+        }
+      });
+    }
+
+    // Verificar novos chamados a cada 30 segundos
+    setInterval(checkNewTickets, 30000);
+
+    // Mostrar mensagens do Django
+    {% if messages %}
+      {% for message in messages %}
+        showNotification("{{ message }}");
+      {% endfor %}
+    {% endif %}
+  </script>
+</body>
+</html>
