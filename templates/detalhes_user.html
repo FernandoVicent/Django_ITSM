@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes do Chamado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-bold mb-6">Chamado TKT-{{ chamado.id|stringformat:"04d" }}</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <p class="text-sm text-gray-600">Título</p>
+                <p class="text-lg font-medium">{{ chamado.titulo }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Status</p>
+                <p class="text-lg font-medium">{{ chamado.status }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Criado em</p>
+                <p class="text-lg font-medium">{{ chamado.criado_em|date:"d/m/Y H:i" }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Técnico Responsável</p>
+                <p class="text-lg font-medium">
+                    {% if chamado.tecnico_responsavel %}
+                        {{ chamado.tecnico_responsavel.username }}
+                    {% else %}
+                        <span class="text-gray-500 italic">Não atribuído</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-2">Descrição do Chamado</h2>
+            <p class="text-gray-800">{{ chamado.descricao }}</p>
+        </div>
+
+        <div>
+            <h2 class="text-xl font-semibold mb-4">Histórico de Ações</h2>
+            <ul class="space-y-4">
+                {% for log in logs %}
+                <li class="border-l-4 border-blue-600 pl-4">
+                    <p class="text-sm text-gray-500">{{ log.data|date:"d/m/Y H:i" }} - <strong>{{ log.autor.username }}</strong></p>
+                    <p>{{ log.mensagem }}</p>
+                </li>
+                {% empty %}
+                <p class="text-gray-500 italic">Nenhum histórico registrado ainda.</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+</title>
+</head>
+<body>
+
+</body>
+</html>

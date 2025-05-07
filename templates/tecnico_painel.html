@@ -50,7 +50,12 @@
           <tbody>
             {% for ticket in tickets %}
             <tr class="border-b hover:bg-gray-50" data-ticket-id="{{ ticket.id }}">
-              <td class="py-2">TKT-{{ ticket.id|stringformat:"04d" }}</td>
+              <td class="py-2">
+                <a href="{% url 'detalhes_chamado' ticket.id %}">
+                TKT-{{ ticket.id|stringformat:"04d" }}
+                </a>
+              </td>
+
               <td class="py-2">{{ticket.usuario}}</td>
               <td>{{ ticket.titulo }}</td>
               <td>

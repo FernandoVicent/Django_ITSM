@@ -1,0 +1,93 @@
+<!-- ticket_detail_tech.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalhes do Chamado</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8 min-h-screen">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Detalhes do Chamado</h1>
+
+    <!-- Form de atualização -->
+    <form method="post">
+      {% csrf_token %}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-4 rounded shadow">
+          <p class="text-sm text-gray-500">ID do Chamado</p>
+          <p class="text-lg font-semibold">TKT-{{ chamado.id|stringformat:"04d" }}</p>
+        </div>
+
+        <!-- Status com select -->
+        <div class="bg-white p-4 rounded shadow">
+          <label for="status" class="text-sm text-gray-500 block mb-1">Status</label>
+          <select name="status" id="status" class="w-full border p-2 rounded">
+            <option value="Aberto" {% if chamado.status == "Aberto" %}selected{% endif %}>Aberto</option>
+            <option value="Em andamento" {% if chamado.status == "Em andamento" %}selected{% endif %}>Em andamento</option>
+            <option value="Resolvido" {% if chamado.status == "Resolvido" %}selected{% endif %}>Resolvido</option>
+          </select>
+        </div>
+
+        <!-- Técnico responsável -->
+        <div class="bg-white p-4 rounded shadow">
+          <label class="block mb-2 font-medium">Técnico Responsável</label>
+            <select name="tecnico_responsavel" class="w-full border p-3 rounded mb-4">
+              <option value="">Selecione um técnico</option>
+              {% for tecnico in tecnicos %}
+                <option value="{{ tecnico.id }}" {% if chamado.tecnico_responsavel.id == tecnico.id %}selected{% endif %}>
+                    {{ tecnico.username }}
+                </option>
+              {% endfor %}
+            </select>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <p class="text-sm text-gray-500">Usuário</p>
+          <p class="text-lg font-semibold">{{ chamado.usuario.username }}</p>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <p class="text-sm text-gray-500">Criado em</p>
+          <p class="text-lg font-semibold">{{ chamado.criado_em|date:"d/m/Y H:i" }}</p>
+        </div>
+      </div>
+
+      <!-- Descrição -->
+      <div class="bg-white p-6 rounded shadow mb-8">
+        <h2 class="text-xl font-semibold mb-2">Descrição do Chamado</h2>
+        <p class="text-gray-700">{{ chamado.descricao }}</p>
+      </div>
+
+      <!-- Ação técnica -->
+      <div class="bg-white p-6 rounded shadow mb-8">
+        <h2 class="text-xl font-semibold mb-4">Atualizar Chamado</h2>
+
+        <label class="block mb-2 font-medium">Descrição da Ação Técnica</label>
+        <textarea name="nota" class="w-full border p-3 rounded mb-4" rows="4" placeholder="Descreva o que foi feito...">{{ chamado.descricao_tecnico }}</textarea>
+
+        {% if chamado.status == "Resolvido" %}
+          <label class="block mb-2 font-medium">Descrição de Encerramento</label>
+          <textarea name="descricao_encerramento" class="w-full border p-3 rounded mb-6" rows="3">{{ chamado.descricao_tecnico }}</textarea>
+        {% endif %}
+
+        <div class="flex justify-end space-x-3">
+          <a href="{% url 'painel_tecnico' %}" class="bg-gray-300 text-black px-4 py-2 rounded">Cancelar</a>
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Salvar</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Histórico -->
+    <div class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-semibold mb-4">Histórico</h2>
+      <ul class="space-y-4">
+        {% for log in historico %}
+          <li class="border-l-4 border-blue-600 pl-4">
+            <p class="text-sm text-gray-500">{{ log.data|date:"d/m/Y H:i" }} - <strong>{{ log.usuario.username }}</strong></p>
+            <p>{{ log.acao }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

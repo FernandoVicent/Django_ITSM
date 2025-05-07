@@ -17,13 +17,3 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
-
-
-
-# @login_required
-# def dashboard_usuario(request):
-#     return render(request, 'usuario_dashboard.html')
-
-# @login_required
-# def painel_tecnico(request):
-#     return render(request, 'tecnico_painel.html')
